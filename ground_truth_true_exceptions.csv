@@ -1,0 +1,7 @@
+side,record_id,true_reason,detail
+ledger,order_WohoNMdZEHNJSs,UNEXPLAINED,order never appears in settlement report
+ledger,order_RTWPElndTdtdD5,UNEXPLAINED,order never appears in settlement report
+settlement,adj_1iCdzzGypueBxH,UNEXPLAINED,adjustment row with no source order
+settlement,adj_qPL2lVSID1u7a6,UNEXPLAINED,adjustment row with no source order
+settlement,adj_4RRyotrCOtw2CX,UNEXPLAINED,adjustment row with no source order
+settlement,setl_Jq5QrHOl0ami,UNEXPLAINED,settlement batch never lands in bank feed

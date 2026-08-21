@@ -1,0 +1,16 @@
+settlement_id,bank_row_id,note
+setl_4OaGzbSHrFRA,bnk_Hi0W3VcMZb,ROUNDING_NOISE
+setl_6l4GoMpvXe7C,bnk_Ba7mQiOj5q,clean
+setl_CTviHl397G0e,bnk_px4kysRoOR,clean
+setl_NWBoIxlKxVsp,bnk_neKGBavh1R,SETTLEMENT_LAG_EXTRA_DAY
+setl_QeUvgoeLMK8u,bnk_exTgt2iVUi,clean
+setl_Rf0Nu8834o3Q,bnk_eILkvnU5MB,clean
+setl_SVtmtc1TbIKS,bnk_fgUKx7tirf,clean
+setl_WSI9pGQkqqjk,bnk_LSr6b02mLl,clean
+setl_YY5sIJ0PHxTX,bnk_sd37EgEKG8,clean
+setl_YdaiNejnCdN5,bnk_5i1JwQV7Vb,clean
+setl_eqxWjywf6BVg,bnk_an56yrSVAy,clean
+setl_fAIFgfILW1az,bnk_Hjfe58juKV,clean
+setl_rsWw6SEMCiay,bnk_tB7op5hLdP,MERGED_BATCH_PRIMARY
+setl_pRsZe9ObzxDN,bnk_tB7op5hLdP,MERGED_BATCH_ABSORBED
+setl_smoJpI6uVEST,bnk_hRRk7GWSkh,MISSING_UTR
