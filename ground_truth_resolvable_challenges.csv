@@ -1,0 +1,5 @@
+side,record_id,challenge_type,detail
+bank,setl_4OaGzbSHrFRA,ROUNDING,"bank amount differs from settlement net by a few paise — needs a tolerance band, not exact match"
+bank,setl_smoJpI6uVEST,MISSING_UTR,UTR absent from narration — must fall back to amount+date matching
+bank,setl_NWBoIxlKxVsp,SETTLEMENT_LAG,lands one business day after the standard T+2 window — needs a wider date tolerance
+bank,setl_rsWw6SEMCiay,MERGED_BATCH,"one bank credit equals the sum of TWO settlement batches — needs sum-of-N matching, not 1:1"

@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Reconciliation Agent — Razorpay AI Buildathon</title>
+  <meta name="description" content="Multi-source reconciliation agent with measured match rate and honest exception reporting. Razorpay AI Buildathon Track 04." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header>
+    <div class="header-inner">
+      <div class="logo">
+        <span class="logo-icon">◈</span>
+        <div>
+          <h1>Reconciliation Agent</h1>
+          <p class="subtitle">Multi-source matching · Measured accuracy · Honest exceptions</p>
+        </div>
+      </div>
+      <div class="controls">
+        <button id="runBtn" class="btn-primary" title="Normal run — full rules cascade, LLM not invoked">
+          <span class="btn-icon">▶</span> Run
+        </button>
+        <button id="runDemoBtn" class="btn-demo" title="Demo mode — ROUNDING case routed through LLM agent">
+          <span class="btn-icon">⚡</span> Run (Demo Mode)
+        </button>
+        <span id="runStatus" class="status-text"></span>
+      </div>
+    </div>
+  </header>
+
+  <!-- TABS -->
+  <nav class="tabs">
+    <button class="tab active" data-tab="summary" id="tab-summary">Summary</button>
+    <button class="tab" data-tab="evaluation" id="tab-evaluation">Evaluation</button>
+    <button class="tab" data-tab="audit" id="tab-audit">Audit Log</button>
+  </nav>
+
+  <!-- ====== TAB: SUMMARY ====== -->
+  <div id="panel-summary" class="tab-panel active">
+
+    <!-- Summary Cards -->
+    <section class="cards" id="summaryCards">
+      <div class="card">
+        <div class="card-label">Match Rate L1</div>
+        <div class="card-value" id="matchRateL1">—</div>
+        <div class="card-sub" id="matchRateL1Sub">orders ↔ settlement</div>
+      </div>
+      <div class="card">
+        <div class="card-label">Match Rate L2</div>
+        <div class="card-value" id="matchRateL2">—</div>
+        <div class="card-sub" id="matchRateL2Sub">settlement ↔ bank</div>
+      </div>
+      <div class="card">
+        <div class="card-label">Exception Precision</div>
+        <div class="card-value" id="excPrecision">—</div>
+        <div class="card-sub" id="excRecall">recall —</div>
+      </div>
+      <div class="card card-agent">
+        <div class="card-label">LLM Calls</div>
+        <div class="card-value" id="llmCalls">—</div>
+        <div class="card-sub" id="llmCallsSub">gray-zone only</div>
+      </div>
+    </section>
+
+    <!-- Stage Breakdown -->
+    <section class="panel">
+      <h2>Stage Breakdown</h2>
+      <p class="panel-desc">Records resolved at each stage — the LLM only touches borderline cases the rules engine cannot confidently decide.</p>
+      <div class="chart-container" id="stageChartWrap"></div>
+    </section>
+
+    <!-- Exception Report -->
+    <section class="panel">
+      <h2>Exception Report</h2>
+      <p class="panel-desc">Records with no matching counterpart. True exceptions are highlighted red. Orange = false exception (shouldn't be here).</p>
+      <div class="table-wrap">
+        <table id="exceptionTable">
+          <thead>
+            <tr>
+              <th>Record ID</th>
+              <th>Side</th>
+              <th>Reason</th>
+              <th>Confidence</th>
+              <th>Rationale</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- ====== TAB: EVALUATION ====== -->
+  <div id="panel-evaluation" class="tab-panel">
+
+    <section class="eval-header">
+      <h2>Ground Truth Evaluation</h2>
+      <p class="panel-desc">Side-by-side comparison of pipeline decisions against the held-out ground truth. This is the metric the panel cares about.</p>
+    </section>
+
+    <!-- Metric bars -->
+    <section class="panel eval-metrics">
+      <h3>Aggregate Metrics</h3>
+      <div class="metric-grid" id="evalMetrics">
+        <div class="metric-row">
+          <span class="metric-label">Exception Precision</span>
+          <div class="metric-bar-wrap"><div class="metric-bar" id="bar-exc-prec"></div></div>
+          <span class="metric-pct" id="pct-exc-prec">—</span>
+        </div>
+        <div class="metric-row">
+          <span class="metric-label">Exception Recall</span>
+          <div class="metric-bar-wrap"><div class="metric-bar" id="bar-exc-rec"></div></div>
+          <span class="metric-pct" id="pct-exc-rec">—</span>
+        </div>
+        <div class="metric-row">
+          <span class="metric-label">L1 Match Rate</span>
+          <div class="metric-bar-wrap"><div class="metric-bar" id="bar-l1"></div></div>
+          <span class="metric-pct" id="pct-l1">—</span>
+        </div>
+        <div class="metric-row">
+          <span class="metric-label">L2 Match Rate</span>
+          <div class="metric-bar-wrap"><div class="metric-bar" id="bar-l2"></div></div>
+          <span class="metric-pct" id="pct-l2">—</span>
+        </div>
+        <div class="metric-row">
+          <span class="metric-label">False Matches</span>
+          <div class="metric-bar-wrap"><div class="metric-bar metric-bar-danger" id="bar-fm" style="width:0"></div></div>
+          <span class="metric-pct" id="pct-fm">—</span>
+        </div>
+        <div class="metric-row">
+          <span class="metric-label">LLM Calls</span>
+          <div class="metric-bar-wrap"><div class="metric-bar metric-bar-info" id="bar-llm" style="width:0"></div></div>
+          <span class="metric-pct" id="pct-llm">—</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- True exceptions table -->
+    <section class="panel">
+      <h3>True Exceptions <span class="badge-count" id="exc-score">—</span></h3>
+      <p class="panel-desc">Pipeline must flag all 6 as EXCEPTION. Any MATCH here is a false match (worst possible error).</p>
+      <div class="table-wrap">
+        <table id="evalExcTable">
+          <thead>
+            <tr><th>Record ID</th><th>Expected</th><th>Pipeline</th><th>Stage</th><th>✓</th></tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Resolvable challenges table -->
+    <section class="panel">
+      <h3>Resolvable Challenges <span class="badge-count" id="res-score">—</span></h3>
+      <p class="panel-desc">These 4 records have a true match but require non-trivial logic. Pipeline must resolve them (not flag as exception).</p>
+      <div class="table-wrap">
+        <table id="evalResTable">
+          <thead>
+            <tr><th>Record ID</th><th>Challenge Type</th><th>Expected</th><th>Pipeline</th><th>Stage</th><th>✓</th></tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- ====== TAB: AUDIT LOG ====== -->
+  <div id="panel-audit" class="tab-panel">
+    <section class="panel panel-flush">
+      <div class="audit-header">
+        <div>
+          <h2>Audit Log</h2>
+          <p class="panel-desc">Every decision at every stage. Click <strong>→ Drill</strong> on any row to see the full record breakdown.</p>
+        </div>
+        <div class="filters">
+          <select id="filterStage"><option value="">All stages</option></select>
+          <select id="filterDecision">
+            <option value="">All decisions</option>
+            <option value="MATCH">MATCH</option>
+            <option value="EXCEPTION">EXCEPTION</option>
+            <option value="BORDERLINE">BORDERLINE</option>
+          </select>
+          <input type="text" id="filterRecord" placeholder="Filter by record ID…" />
+        </div>
+      </div>
+      <div class="table-wrap audit-wrap">
+        <table id="auditTable">
+          <thead>
+            <tr>
+              <th>Record</th>
+              <th>Decision</th>
+              <th>Stage</th>
+              <th>Matched To</th>
+              <th>Reason</th>
+              <th>Rationale</th>
+              <th>SHAP</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  <!-- ====== DRILL-DOWN MODAL ====== -->
+  <div id="drillModal" class="modal-overlay" role="dialog" aria-modal="true" aria-label="Record drill-down">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 id="modalTitle">Record Detail</h2>
+        <button class="modal-close" id="modalClose" aria-label="Close">✕</button>
+      </div>
+      <div class="modal-body" id="modalBody">
+        <div class="loading-spinner">Loading…</div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
