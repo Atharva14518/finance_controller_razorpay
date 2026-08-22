@@ -18,7 +18,7 @@ from pipeline.ml_scorer import MLScorer
 from pipeline.reporter import ReconciliationReport, compute_report, report_to_dict
 
 # Load .env so GROQ_API_KEY is available when running via uvicorn
-load_dotenv(Path(__file__).resolve().parent.parent / ".env")
+load_dotenv(Path(__file__).resolve().parent.parent / ".env", override=True)
 
 # The ROUNDING case — skipped by rules in demo mode so it hits the LLM agent
 DEMO_AGENT_SID = "setl_4OaGzbSHrFRA"

@@ -36,6 +36,7 @@ class ResultsResponse(BaseModel):
     false_matches: list[str]
     false_exceptions: list[str]
     llm_call_count: int
+    agent_fallback_count: int = 0
     metrics_detail: dict
     demo_agent: bool = False
 
@@ -116,4 +117,5 @@ class EvaluationResponse(BaseModel):
     false_matches: list[str]
     false_exceptions: list[str]
     llm_call_count: int
+    agent_fallback_count: int = 0
     demo_agent: bool

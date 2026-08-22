@@ -31,6 +31,7 @@ class Level2Result:
     stage_counts: dict[str, int]
     gray_zone_pairs: list[tuple[str, str, dict]] = field(default_factory=list)
     llm_call_count: int = 0
+    agent_fallback_count: int = 0
 
 
 def _batch_totals(settlement_df: pd.DataFrame) -> pd.DataFrame:
@@ -384,6 +385,7 @@ def apply_ml_and_agent(
 
     still_unresolved = set(level2_result.unresolved_batches)
     llm_calls = 0
+    agent_fallback_count = 0
     # In demo mode raise threshold so gray-zone records reach the agent
     ml_auto_match_threshold = 0.99 if demo_agent else 0.85
 
@@ -450,27 +452,34 @@ def apply_ml_and_agent(
 
         # Gray zone — agent adjudication
         if best_bank_id and agent_adjudicator:
-            llm_calls += 1
             decision = agent_adjudicator.adjudicate(
                 settlement_id=sid,
                 bank_row_id=best_bank_id,
                 shap_values=best_shap,
                 features=best_features or {},
             )
+            used_fallback = decision.get("used_fallback", False)
+            if used_fallback:
+                agent_fallback_count += 1
+                resolved_stage = "level2_agent_fallback"
+            else:
+                llm_calls += 1
+                resolved_stage = "level2_agent"
+
             tool_trace = decision.get("tool_trace", [])
             if decision["decision"] == "MATCH":
                 level2_result.matches.append(
                     Level2Match(
                         settlement_id=sid,
                         bank_row_id=best_bank_id,
-                        resolved_by="level2_agent",
+                        resolved_by=resolved_stage,
                         reason_code=decision["reason"],
                         confidence=decision["confidence"],
                         rationale=decision["rationale"],
                     )
                 )
-                level2_result.stage_counts["level2_agent"] = (
-                    level2_result.stage_counts.get("level2_agent", 0) + 1
+                level2_result.stage_counts[resolved_stage] = (
+                    level2_result.stage_counts.get(resolved_stage, 0) + 1
                 )
                 still_unresolved.discard(sid)
                 matched_banks.add(best_bank_id)
@@ -478,7 +487,7 @@ def apply_ml_and_agent(
                     record_id=sid,
                     side="settlement_batch",
                     decision="MATCH",
-                    resolved_by="level2_agent",
+                    resolved_by=resolved_stage,
                     matched_to=best_bank_id,
                     confidence=decision["confidence"],
                     reason_code=decision["reason"],
@@ -491,7 +500,7 @@ def apply_ml_and_agent(
                     record_id=sid,
                     side="settlement_batch",
                     decision="EXCEPTION",
-                    resolved_by="level2_agent",
+                    resolved_by=resolved_stage,
                     matched_to=best_bank_id,
                     confidence=decision["confidence"],
                     reason_code=decision["reason"],
@@ -514,4 +523,5 @@ def apply_ml_and_agent(
 
     level2_result.unresolved_batches = list(still_unresolved)
     level2_result.llm_call_count = llm_calls
+    level2_result.agent_fallback_count = agent_fallback_count
     return level2_result

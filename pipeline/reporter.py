@@ -39,6 +39,7 @@ class ReconciliationReport:
     false_matches: list[str]
     false_exceptions: list[str]
     llm_call_count: int
+    agent_fallback_count: int = 0
     metrics_detail: dict = field(default_factory=dict)
 
 
@@ -160,6 +161,7 @@ def compute_report(
         false_matches=false_matches,
         false_exceptions=false_exceptions,
         llm_call_count=level2.llm_call_count,
+        agent_fallback_count=level2.agent_fallback_count,
         metrics_detail={
             "true_exceptions_found": sorted(true_positives_exc),
             "false_exception_flags": sorted(flagged_ids - true_exception_ids),
@@ -194,5 +196,6 @@ def report_to_dict(report: ReconciliationReport) -> dict:
         "false_matches": report.false_matches,
         "false_exceptions": report.false_exceptions,
         "llm_call_count": report.llm_call_count,
+        "agent_fallback_count": report.agent_fallback_count,
         "metrics_detail": report.metrics_detail,
     }
