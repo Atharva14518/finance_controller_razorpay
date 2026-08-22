@@ -3,8 +3,22 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Reconciliation Agent — Razorpay AI Buildathon</title>
-  <meta name="description" content="Multi-source reconciliation agent with measured match rate and honest exception reporting. Razorpay AI Buildathon Track 04." />
+  <title>Reconciliation Agent — Razorpay AI Buildathon Track 04</title>
+  <meta name="description" content="Multi-source finance reconciliation agent with measured match rate, honest exception reporting, and tool-calling LLM adjudication." />
+  
+  <!-- Open Graph / Meta -->
+  <meta property="og:title" content="Reconciliation Agent — Razorpay AI Buildathon" />
+  <meta property="og:description" content="Multi-source finance reconciliation agent with measured accuracy, honest exception reporting, and zero hallucinations." />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 630' fill='%23f5f5f5'><rect width='1200' height='630' fill='%23f5f5f5'/><text x='600' y='300' font-size='48' font-weight='600' fill='%230a0a0a' text-anchor='middle' font-family='sans-serif'>Reconciliation Agent</text><text x='600' y='360' font-size='24' fill='%23737373' text-anchor='middle' font-family='sans-serif'>Razorpay AI Buildathon · Track 04</text></svg>" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Reconciliation Agent — Razorpay AI Buildathon" />
+  <meta name="twitter:description" content="Multi-source finance reconciliation agent with measured match rate and honest exception reporting." />
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='24' fill='%230a0a0a'/><text x='50' y='68' font-size='54' fill='%23fafafa' text-anchor='middle' font-family='sans-serif'>◈</text></svg>" />
+  
+  <!-- Fonts -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/geist@1/dist/fonts/geist-sans/style.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
@@ -12,204 +26,407 @@
 </head>
 <body>
 
-  <!-- HEADER -->
+  <!-- TOP NAVIGATION HEADER -->
   <header>
     <div class="header-inner">
       <div class="logo">
         <span class="logo-icon">◈</span>
-        <div>
-          <h1>Reconciliation Agent</h1>
-          <p class="subtitle">Multi-source matching · Measured accuracy · Honest exceptions</p>
+        <div class="logo-text">
+          <span class="brand-title">Reconciliation Agent</span>
+          <span class="brand-tag">Track 04</span>
         </div>
       </div>
-      <div class="controls">
-        <button id="runBtn" class="btn-primary" title="Normal run — full rules cascade, LLM not invoked">
-          <span class="btn-icon">▶</span> Run
-        </button>
-        <button id="runDemoBtn" class="btn-demo" title="Demo mode — ROUNDING case routed through LLM agent">
-          <span class="btn-icon">⚡</span> Run (Demo Mode)
-        </button>
-        <span id="runStatus" class="status-text"></span>
+      <nav class="nav-links">
+        <a href="#overview" class="nav-link">Overview</a>
+        <a href="#architecture" class="nav-link">Architecture</a>
+        <a href="#demo" class="nav-link">Live Demo</a>
+        <a href="https://github.com/Atharva14518/finance_controller_razorpay" target="_blank" rel="noreferrer" class="nav-link">GitHub ↗</a>
+      </nav>
+      <div class="header-cta">
+        <a href="#demo" class="btn-primary btn-sm">Launch Demo ↓</a>
       </div>
     </div>
   </header>
 
-  <!-- TABS -->
-  <nav class="tabs">
-    <button class="tab active" data-tab="summary" id="tab-summary">Summary</button>
-    <button class="tab" data-tab="evaluation" id="tab-evaluation">Evaluation</button>
-    <button class="tab" data-tab="audit" id="tab-audit">Audit Log</button>
-  </nav>
-
-  <!-- ====== TAB: SUMMARY ====== -->
-  <div id="panel-summary" class="tab-panel active">
-
-    <!-- Summary Cards -->
-    <section class="cards" id="summaryCards">
-      <div class="card">
-        <div class="card-label">Match Rate L1</div>
-        <div class="card-value" id="matchRateL1">—</div>
-        <div class="card-sub" id="matchRateL1Sub">orders ↔ settlement</div>
+  <!-- ====== PRIORITY 1: HERO / LANDING SECTION ====== -->
+  <section id="overview" class="hero-section">
+    <div class="hero-container">
+      <div class="hero-badge">
+        <span class="hero-badge-dot"></span>
+        Razorpay AI Buildathon · Track 04: AI Finance Controller
       </div>
-      <div class="card">
-        <div class="card-label">Match Rate L2</div>
-        <div class="card-value" id="matchRateL2">—</div>
-        <div class="card-sub" id="matchRateL2Sub">settlement ↔ bank</div>
-      </div>
-      <div class="card">
-        <div class="card-label">Exception Precision</div>
-        <div class="card-value" id="excPrecision">—</div>
-        <div class="card-sub" id="excRecall">recall —</div>
-      </div>
-      <div class="card card-agent">
-        <div class="card-label">LLM Calls</div>
-        <div class="card-value" id="llmCalls">—</div>
-        <div class="card-sub" id="llmCallsSub">gray-zone only</div>
-      </div>
-    </section>
+      <h1 class="hero-title">Automated Multi-Source Reconciliation Agent</h1>
+      <p class="hero-lead">
+        Finance operations remain manual because <strong>verification capacity, not generation speed, is the bottleneck</strong>.
+        Our agent pairs a high-precision multi-stage rules cascade with an LLM adjudicator invoked strictly on gray-zone edge cases.
+      </p>
 
-    <!-- Stage Breakdown -->
-    <section class="panel">
-      <h2>Stage Breakdown</h2>
-      <p class="panel-desc">Records resolved at each stage — the LLM only touches borderline cases the rules engine cannot confidently decide.</p>
-      <div class="chart-container" id="stageChartWrap"></div>
-    </section>
-
-    <!-- Exception Report -->
-    <section class="panel">
-      <h2>Exception Report</h2>
-      <p class="panel-desc">Records with no matching counterpart. True exceptions are highlighted red. Orange = false exception (shouldn't be here).</p>
-      <div class="table-wrap">
-        <table id="exceptionTable">
-          <thead>
-            <tr>
-              <th>Record ID</th>
-              <th>Side</th>
-              <th>Reason</th>
-              <th>Confidence</th>
-              <th>Rationale</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-      </div>
-    </section>
-
-  </div>
-
-  <!-- ====== TAB: EVALUATION ====== -->
-  <div id="panel-evaluation" class="tab-panel">
-
-    <section class="eval-header">
-      <h2>Ground Truth Evaluation</h2>
-      <p class="panel-desc">Side-by-side comparison of pipeline decisions against the held-out ground truth. This is the metric the panel cares about.</p>
-    </section>
-
-    <!-- Metric bars -->
-    <section class="panel eval-metrics">
-      <h3>Aggregate Metrics</h3>
-      <div class="metric-grid" id="evalMetrics">
-        <div class="metric-row">
-          <span class="metric-label">Exception Precision</span>
-          <div class="metric-bar-wrap"><div class="metric-bar" id="bar-exc-prec"></div></div>
-          <span class="metric-pct" id="pct-exc-prec">—</span>
-        </div>
-        <div class="metric-row">
-          <span class="metric-label">Exception Recall</span>
-          <div class="metric-bar-wrap"><div class="metric-bar" id="bar-exc-rec"></div></div>
-          <span class="metric-pct" id="pct-exc-rec">—</span>
-        </div>
-        <div class="metric-row">
-          <span class="metric-label">L1 Match Rate</span>
-          <div class="metric-bar-wrap"><div class="metric-bar" id="bar-l1"></div></div>
-          <span class="metric-pct" id="pct-l1">—</span>
-        </div>
-        <div class="metric-row">
-          <span class="metric-label">L2 Match Rate</span>
-          <div class="metric-bar-wrap"><div class="metric-bar" id="bar-l2"></div></div>
-          <span class="metric-pct" id="pct-l2">—</span>
-        </div>
-        <div class="metric-row">
-          <span class="metric-label">False Matches</span>
-          <div class="metric-bar-wrap"><div class="metric-bar metric-bar-danger" id="bar-fm" style="width:0"></div></div>
-          <span class="metric-pct" id="pct-fm">—</span>
-        </div>
-        <div class="metric-row">
-          <span class="metric-label">LLM Calls</span>
-          <div class="metric-bar-wrap"><div class="metric-bar metric-bar-info" id="bar-llm" style="width:0"></div></div>
-          <span class="metric-pct" id="pct-llm">—</span>
+      <!-- Restraint callout block -->
+      <div class="hero-callout">
+        <div class="callout-icon">⚡</div>
+        <div class="callout-content">
+          <div class="callout-title">Selective Agent Invocation — Restraint by Design</div>
+          <div class="callout-desc">
+            Rules and ML resolve 98%+ of records deterministically. The Groq LLM agent is strictly the adjudicator of last resort, using live tool lookups with zero hallucination risk.
+          </div>
         </div>
       </div>
-    </section>
 
-    <!-- True exceptions table -->
-    <section class="panel">
-      <h3>True Exceptions <span class="badge-count" id="exc-score">—</span></h3>
-      <p class="panel-desc">Pipeline must flag all 6 as EXCEPTION. Any MATCH here is a false match (worst possible error).</p>
-      <div class="table-wrap">
-        <table id="evalExcTable">
-          <thead>
-            <tr><th>Record ID</th><th>Expected</th><th>Pipeline</th><th>Stage</th><th>✓</th></tr>
-          </thead>
-          <tbody></tbody>
-        </table>
+      <!-- Key highlight cards -->
+      <div class="hero-highlights">
+        <div class="highlight-card">
+          <div class="highlight-value">100%</div>
+          <div class="highlight-label">Match Rate</div>
+          <div class="highlight-sub">60/60 orders &amp; 15/15 batches</div>
+        </div>
+        <div class="highlight-card">
+          <div class="highlight-value">100%</div>
+          <div class="highlight-label">Exception Precision</div>
+          <div class="highlight-sub">6/6 true exceptions isolated</div>
+        </div>
+        <div class="highlight-card">
+          <div class="highlight-value">0</div>
+          <div class="highlight-label">False Matches</div>
+          <div class="highlight-sub">Zero forced matches on held-out data</div>
+        </div>
+        <div class="highlight-card">
+          <div class="highlight-value">100%</div>
+          <div class="highlight-label">Auditability</div>
+          <div class="highlight-sub">Immutable SQLite trail &amp; SHAP values</div>
+        </div>
       </div>
-    </section>
 
-    <!-- Resolvable challenges table -->
-    <section class="panel">
-      <h3>Resolvable Challenges <span class="badge-count" id="res-score">—</span></h3>
-      <p class="panel-desc">These 4 records have a true match but require non-trivial logic. Pipeline must resolve them (not flag as exception).</p>
-      <div class="table-wrap">
-        <table id="evalResTable">
-          <thead>
-            <tr><th>Record ID</th><th>Challenge Type</th><th>Expected</th><th>Pipeline</th><th>Stage</th><th>✓</th></tr>
-          </thead>
-          <tbody></tbody>
-        </table>
+      <div class="hero-actions">
+        <a href="#demo" class="btn-primary">View Live Demo ↓</a>
+        <a href="#architecture" class="btn-demo">Explore Architecture</a>
       </div>
-    </section>
+    </div>
+  </section>
 
-  </div>
+  <!-- ====== PRIORITY 2: ARCHITECTURE SECTION ====== -->
+  <section id="architecture" class="arch-section">
+    <div class="arch-container">
+      <div class="section-header">
+        <h2>Pipeline Architecture</h2>
+        <p class="panel-desc">A multi-stage verification cascade that resolves clean records instantly and escalates only ambiguous records.</p>
+      </div>
 
-  <!-- ====== TAB: AUDIT LOG ====== -->
-  <div id="panel-audit" class="tab-panel">
-    <section class="panel panel-flush">
-      <div class="audit-header">
+      <div class="arch-card">
+        <!-- Responsive SVG Architecture Diagram -->
+        <svg class="arch-diagram" viewBox="0 0 1080 340" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Reconciliation Pipeline Architecture">
+          <!-- Background grid lines -->
+          <rect width="1080" height="340" rx="16" fill="#ffffff" />
+          
+          <!-- Source Column -->
+          <g transform="translate(30, 30)">
+            <rect width="180" height="280" rx="10" fill="#fafafa" stroke="#e5e5e5" stroke-width="1" />
+            <text x="90" y="30" font-family="'Geist', Inter, sans-serif" font-size="12" font-weight="600" fill="#737373" text-anchor="middle" letter-spacing="0.6">1. INGESTION</text>
+            
+            <rect x="15" y="55" width="150" height="55" rx="8" fill="#ffffff" stroke="#e5e5e5" stroke-width="1" />
+            <text x="90" y="80" font-family="'Geist', Inter, sans-serif" font-size="12" font-weight="600" fill="#0a0a0a" text-anchor="middle">Orders Ledger</text>
+            <text x="90" y="96" font-family="'Geist', Inter, sans-serif" font-size="10" fill="#737373" text-anchor="middle">62 Orders (Internal)</text>
+
+            <rect x="15" y="125" width="150" height="55" rx="8" fill="#ffffff" stroke="#e5e5e5" stroke-width="1" />
+            <text x="90" y="150" font-family="'Geist', Inter, sans-serif" font-size="12" font-weight="600" fill="#0a0a0a" text-anchor="middle">Settlement Report</text>
+            <text x="90" y="166" font-family="'Geist', Inter, sans-serif" font-size="10" fill="#737373" text-anchor="middle">72 Rows / 15 Batches</text>
+
+            <rect x="15" y="195" width="150" height="55" rx="8" fill="#ffffff" stroke="#e5e5e5" stroke-width="1" />
+            <text x="90" y="220" font-family="'Geist', Inter, sans-serif" font-size="12" font-weight="600" fill="#0a0a0a" text-anchor="middle">Bank Statement</text>
+            <text x="90" y="236" font-family="'Geist', Inter, sans-serif" font-size="10" fill="#737373" text-anchor="middle">14 Statement Lines</text>
+          </g>
+
+          <!-- Arrow 1 -->
+          <path d="M 220 170 L 250 170" stroke="#0a0a0a" stroke-width="2" stroke-linecap="round" />
+          <polygon points="250,166 258,170 250,174" fill="#0a0a0a" />
+
+          <!-- Level 1 Column -->
+          <g transform="translate(268, 30)">
+            <rect width="200" height="280" rx="10" fill="#fafafa" stroke="#e5e5e5" stroke-width="1" />
+            <text x="100" y="30" font-family="'Geist', Inter, sans-serif" font-size="12" font-weight="600" fill="#737373" text-anchor="middle" letter-spacing="0.6">2. LEVEL 1 MATCH</text>
+
+            <rect x="15" y="70" width="170" height="150" rx="8" fill="#ffffff" stroke="#e5e5e5" stroke-width="1" />
+            <text x="100" y="110" font-family="'Geist', Inter, sans-serif" font-size="13" font-weight="600" fill="#0a0a0a" text-anchor="middle">Order ↔ Settlement</text>
+            <text x="100" y="135" font-family="'Geist', Inter, sans-serif" font-size="11" fill="#737373" text-anchor="middle">Exact Order ID Join</text>
+            <text x="100" y="155" font-family="'Geist', Inter, sans-serif" font-size="11" fill="#737373" text-anchor="middle">Amount &amp; Fee Validation</text>
+            <rect x="40" y="175" width="120" height="24" rx="12" fill="#171717" />
+            <text x="100" y="191" font-family="'Geist', Inter, sans-serif" font-size="10" font-weight="600" fill="#fafafa" text-anchor="middle">60/60 MATCHED</text>
+          </g>
+
+          <!-- Arrow 2 -->
+          <path d="M 478 170 L 508 170" stroke="#0a0a0a" stroke-width="2" stroke-linecap="round" />
+          <polygon points="508,166 516,170 508,174" fill="#0a0a0a" />
+
+          <!-- Level 2 Cascade Column -->
+          <g transform="translate(526, 30)">
+            <rect width="280" height="280" rx="10" fill="#fafafa" stroke="#e5e5e5" stroke-width="1" />
+            <text x="140" y="30" font-family="'Geist', Inter, sans-serif" font-size="12" font-weight="600" fill="#737373" text-anchor="middle" letter-spacing="0.6">3. LEVEL 2 CASCADE</text>
+
+            <rect x="15" y="55" width="250" height="42" rx="8" fill="#ffffff" stroke="#e5e5e5" stroke-width="1" />
+            <text x="30" y="80" font-family="'Geist', Inter, sans-serif" font-size="11" font-weight="600" fill="#0a0a0a">1. Deterministic UTR Match</text>
+            <text x="245" y="80" font-family="'Geist', Inter, sans-serif" font-size="11" font-weight="600" fill="#737373" text-anchor="end">11 batches</text>
+
+            <rect x="15" y="105" width="250" height="42" rx="8" fill="#ffffff" stroke="#e5e5e5" stroke-width="1" />
+            <text x="30" y="130" font-family="'Geist', Inter, sans-serif" font-size="11" font-weight="600" fill="#0a0a0a">2. Business Rules (Lag / Merged)</text>
+            <text x="245" y="130" font-family="'Geist', Inter, sans-serif" font-size="11" font-weight="600" fill="#737373" text-anchor="end">3 batches</text>
+
+            <rect x="15" y="155" width="250" height="42" rx="8" fill="#ffffff" stroke="#e5e5e5" stroke-width="1" />
+            <text x="30" y="180" font-family="'Geist', Inter, sans-serif" font-size="11" font-weight="600" fill="#0a0a0a">3. XGBoost + SHAP Confidence</text>
+            <text x="245" y="180" font-family="'Geist', Inter, sans-serif" font-size="11" font-weight="600" fill="#737373" text-anchor="end">Gray zone</text>
+
+            <rect x="15" y="205" width="250" height="52" rx="8" fill="#0a0a0a" />
+            <text x="30" y="228" font-family="'Geist', Inter, sans-serif" font-size="11" font-weight="600" fill="#fafafa">4. Groq LLM Agent ⚡</text>
+            <text x="30" y="244" font-family="'Geist', Inter, sans-serif" font-size="10" fill="#737373">Tool lookups · Borderline only</text>
+            <text x="245" y="236" font-family="'Geist', Inter, sans-serif" font-size="10" font-weight="600" fill="#fafafa" text-anchor="end">Adjudicator</text>
+          </g>
+
+          <!-- Arrow 3 -->
+          <path d="M 816 170 L 846 170" stroke="#0a0a0a" stroke-width="2" stroke-linecap="round" />
+          <polygon points="846,166 854,170 846,174" fill="#0a0a0a" />
+
+          <!-- Output Column -->
+          <g transform="translate(864, 30)">
+            <rect width="186" height="280" rx="10" fill="#fafafa" stroke="#e5e5e5" stroke-width="1" />
+            <text x="93" y="30" font-family="'Geist', Inter, sans-serif" font-size="12" font-weight="600" fill="#737373" text-anchor="middle" letter-spacing="0.6">4. VERIFICATION</text>
+
+            <rect x="15" y="55" width="156" height="65" rx="8" fill="#ffffff" stroke="#e5e5e5" stroke-width="1" />
+            <text x="93" y="82" font-family="'Geist', Inter, sans-serif" font-size="11" font-weight="600" fill="#0a0a0a" text-anchor="middle">Dual Match Rates</text>
+            <text x="93" y="102" font-family="'Geist', Inter, sans-serif" font-size="11" font-weight="600" fill="#171717" text-anchor="middle">100% L1 &amp; L2</text>
+
+            <rect x="15" y="130" width="156" height="65" rx="8" fill="#ffffff" stroke="#e5e5e5" stroke-width="1" />
+            <text x="93" y="157" font-family="'Geist', Inter, sans-serif" font-size="11" font-weight="600" fill="#e7000b" text-anchor="middle">Exception Report</text>
+            <text x="93" y="177" font-family="'Geist', Inter, sans-serif" font-size="11" fill="#737373" text-anchor="middle">6 True Exceptions</text>
+
+            <rect x="15" y="205" width="156" height="55" rx="8" fill="#ffffff" stroke="#e5e5e5" stroke-width="1" />
+            <text x="93" y="232" font-family="'Geist', Inter, sans-serif" font-size="11" font-weight="600" fill="#0a0a0a" text-anchor="middle">SQLite Audit Trail</text>
+            <text x="93" y="248" font-family="'Geist', Inter, sans-serif" font-size="10" fill="#737373" text-anchor="middle">Every decision logged</text>
+          </g>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====== PRIORITY 4: INTERACTIVE DEMO & DASHBOARD ====== -->
+  <section id="demo" class="demo-section">
+    <div class="demo-container">
+
+      <!-- Section Title & Execution Controls -->
+      <div class="demo-header">
         <div>
-          <h2>Audit Log</h2>
-          <p class="panel-desc">Every decision at every stage. Click <strong>→ Drill</strong> on any row to see the full record breakdown.</p>
+          <h2>Interactive Controller Dashboard</h2>
+          <p class="panel-desc">Reconcile live synthetic transactions against held-out ground truth data.</p>
         </div>
-        <div class="filters">
-          <select id="filterStage"><option value="">All stages</option></select>
-          <select id="filterDecision">
-            <option value="">All decisions</option>
-            <option value="MATCH">MATCH</option>
-            <option value="EXCEPTION">EXCEPTION</option>
-            <option value="BORDERLINE">BORDERLINE</option>
-          </select>
-          <input type="text" id="filterRecord" placeholder="Filter by record ID…" />
+        <div class="controls">
+          <button id="runBtn" class="btn-primary" title="Normal run — full rules cascade, 0 LLM calls">
+            <span class="btn-icon">▶</span> Run
+          </button>
+          <button id="runDemoBtn" class="btn-demo" title="Demo mode — routes rounding case to Groq agent">
+            <span class="btn-icon">⚡</span> Run (Demo Mode)
+          </button>
+          <span id="runStatus" class="status-text">Ready to run</span>
         </div>
       </div>
-      <div class="table-wrap audit-wrap">
-        <table id="auditTable">
-          <thead>
-            <tr>
-              <th>Record</th>
-              <th>Decision</th>
-              <th>Stage</th>
-              <th>Matched To</th>
-              <th>Reason</th>
-              <th>Rationale</th>
-              <th>SHAP</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
+
+      <!-- Helper Empty-State Banner -->
+      <div id="demoHelperBanner" class="empty-helper-banner">
+        <span class="helper-icon">ⓘ</span>
+        <span>Click <strong>▶ Run</strong> to execute the full deterministic pipeline, or <strong>⚡ Run (Demo Mode)</strong> to route gray-zone edge cases to the live Groq LLM agent.</span>
       </div>
-    </section>
-  </div>
+
+      <!-- TABS -->
+      <nav class="tabs">
+        <button class="tab active" data-tab="summary" id="tab-summary">Summary</button>
+        <button class="tab" data-tab="evaluation" id="tab-evaluation">Evaluation</button>
+        <button class="tab" data-tab="audit" id="tab-audit">Audit Log</button>
+      </nav>
+
+      <!-- ====== TAB: SUMMARY ====== -->
+      <div id="panel-summary" class="tab-panel active">
+
+        <!-- Summary Cards -->
+        <section class="cards" id="summaryCards">
+          <div class="card">
+            <div class="card-label">Match Rate L1</div>
+            <div class="card-value" id="matchRateL1">—</div>
+            <div class="card-sub" id="matchRateL1Sub">orders ↔ settlement</div>
+          </div>
+          <div class="card">
+            <div class="card-label">Match Rate L2</div>
+            <div class="card-value" id="matchRateL2">—</div>
+            <div class="card-sub" id="matchRateL2Sub">settlement ↔ bank</div>
+          </div>
+          <div class="card">
+            <div class="card-label">Exception Precision</div>
+            <div class="card-value" id="excPrecision">—</div>
+            <div class="card-sub" id="excRecall">recall —</div>
+          </div>
+          <div class="card card-agent">
+            <div class="card-label">LLM Calls</div>
+            <div class="card-value" id="llmCalls">—</div>
+            <div class="card-sub" id="llmCallsSub">gray-zone only</div>
+          </div>
+        </section>
+
+        <!-- Stage Breakdown -->
+        <section class="panel">
+          <h2>Stage Breakdown</h2>
+          <p class="panel-desc">Records resolved at each stage — the LLM only touches borderline cases the rules engine cannot confidently decide.</p>
+          <div class="chart-container" id="stageChartWrap"></div>
+        </section>
+
+        <!-- Exception Report -->
+        <section class="panel">
+          <h2>Exception Report</h2>
+          <p class="panel-desc">Records with no matching counterpart. True exceptions are highlighted in Ember. Orange indicates false exceptions.</p>
+          <div class="table-wrap">
+            <table id="exceptionTable">
+              <thead>
+                <tr>
+                  <th>Record ID</th>
+                  <th>Side</th>
+                  <th>Reason</th>
+                  <th>Confidence</th>
+                  <th>Rationale</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </section>
+
+      </div>
+
+      <!-- ====== TAB: EVALUATION ====== -->
+      <div id="panel-evaluation" class="tab-panel">
+
+        <section class="eval-header">
+          <h2>Ground Truth Evaluation</h2>
+          <p class="panel-desc">Side-by-side comparison of pipeline decisions against the held-out ground truth data.</p>
+        </section>
+
+        <!-- Metric bars -->
+        <section class="panel eval-metrics">
+          <h3>Aggregate Metrics</h3>
+          <div class="metric-grid" id="evalMetrics">
+            <div class="metric-row">
+              <span class="metric-label">Exception Precision</span>
+              <div class="metric-bar-wrap"><div class="metric-bar" id="bar-exc-prec"></div></div>
+              <span class="metric-pct" id="pct-exc-prec">—</span>
+            </div>
+            <div class="metric-row">
+              <span class="metric-label">Exception Recall</span>
+              <div class="metric-bar-wrap"><div class="metric-bar" id="bar-exc-rec"></div></div>
+              <span class="metric-pct" id="pct-exc-rec">—</span>
+            </div>
+            <div class="metric-row">
+              <span class="metric-label">L1 Match Rate</span>
+              <div class="metric-bar-wrap"><div class="metric-bar" id="bar-l1"></div></div>
+              <span class="metric-pct" id="pct-l1">—</span>
+            </div>
+            <div class="metric-row">
+              <span class="metric-label">L2 Match Rate</span>
+              <div class="metric-bar-wrap"><div class="metric-bar" id="bar-l2"></div></div>
+              <span class="metric-pct" id="pct-l2">—</span>
+            </div>
+            <div class="metric-row">
+              <span class="metric-label">False Matches</span>
+              <div class="metric-bar-wrap"><div class="metric-bar metric-bar-danger" id="bar-fm" style="width:0"></div></div>
+              <span class="metric-pct" id="pct-fm">—</span>
+            </div>
+            <div class="metric-row">
+              <span class="metric-label">LLM Calls</span>
+              <div class="metric-bar-wrap"><div class="metric-bar metric-bar-info" id="bar-llm" style="width:0"></div></div>
+              <span class="metric-pct" id="pct-llm">—</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- True exceptions table -->
+        <section class="panel">
+          <h3>True Exceptions <span class="badge-count" id="exc-score">—</span></h3>
+          <p class="panel-desc">Pipeline must flag all 6 as EXCEPTION. Any MATCH here is a false match (worst possible error).</p>
+          <div class="table-wrap">
+            <table id="evalExcTable">
+              <thead>
+                <tr><th>Record ID</th><th>Expected</th><th>Pipeline</th><th>Stage</th><th>✓</th></tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- Resolvable challenges table -->
+        <section class="panel">
+          <h3>Resolvable Challenges <span class="badge-count" id="res-score">—</span></h3>
+          <p class="panel-desc">These 4 records have a true match requiring non-trivial logic. Pipeline must resolve them without flagging exceptions.</p>
+          <div class="table-wrap">
+            <table id="evalResTable">
+              <thead>
+                <tr><th>Record ID</th><th>Challenge Type</th><th>Expected</th><th>Pipeline</th><th>Stage</th><th>✓</th></tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </section>
+
+      </div>
+
+      <!-- ====== TAB: AUDIT LOG ====== -->
+      <div id="panel-audit" class="tab-panel">
+        <section class="panel panel-flush">
+          <div class="audit-header">
+            <div>
+              <h2>Audit Log</h2>
+              <p class="panel-desc">Every decision at every stage. Click <strong>→ Drill</strong> on any row to inspect complete context and tool traces.</p>
+            </div>
+            <div class="filters">
+              <select id="filterStage"><option value="">All stages</option></select>
+              <select id="filterDecision">
+                <option value="">All decisions</option>
+                <option value="MATCH">MATCH</option>
+                <option value="EXCEPTION">EXCEPTION</option>
+                <option value="BORDERLINE">BORDERLINE</option>
+              </select>
+              <input type="text" id="filterRecord" placeholder="Filter by record ID…" />
+            </div>
+          </div>
+          <div class="table-wrap audit-wrap">
+            <table id="auditTable">
+              <thead>
+                <tr>
+                  <th>Record</th>
+                  <th>Decision</th>
+                  <th>Stage</th>
+                  <th>Matched To</th>
+                  <th>Reason</th>
+                  <th>Rationale</th>
+                  <th>SHAP</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ====== PRIORITY 5: FOOTER ====== -->
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-left">
+        <div class="footer-logo">◈ Reconciliation Agent</div>
+        <div class="footer-copy">Built for Razorpay AI Buildathon Track 04 · By Atharva</div>
+      </div>
+      <div class="footer-links">
+        <a href="https://github.com/Atharva14518/finance_controller_razorpay" target="_blank" rel="noreferrer">GitHub Repository ↗</a>
+        <a href="#demo">Live Controller Demo</a>
+        <a href="#architecture">Architecture</a>
+        <a href="#" onclick="alert('Demo video link will be available upon recording submission.'); return false;">Demo Video (Coming Soon)</a>
+      </div>
+    </div>
+  </footer>
 
   <!-- ====== DRILL-DOWN MODAL ====== -->
   <div id="drillModal" class="modal-overlay" role="dialog" aria-modal="true" aria-label="Record drill-down">

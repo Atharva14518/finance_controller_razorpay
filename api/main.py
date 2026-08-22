@@ -104,6 +104,7 @@ def get_results(run_id: str):
         false_matches=r["false_matches"],
         false_exceptions=r["false_exceptions"],
         llm_call_count=r["llm_call_count"],
+        agent_fallback_count=r.get("agent_fallback_count", 0),
         metrics_detail=r["metrics_detail"],
         demo_agent=r.get("demo_agent", False),
     )
@@ -291,6 +292,7 @@ def get_evaluation(run_id: str):
         false_matches=report["false_matches"],
         false_exceptions=report["false_exceptions"],
         llm_call_count=report["llm_call_count"],
+        agent_fallback_count=report.get("agent_fallback_count", 0),
         demo_agent=report.get("demo_agent", False),
     )
 

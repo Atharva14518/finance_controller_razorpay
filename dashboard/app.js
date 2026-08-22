@@ -14,6 +14,7 @@ const STAGE_LABELS = {
   level2_rules_merged_batch: 'L2 Merged Batch',
   level2_ml_high_confidence: 'L2 ML (XGBoost)',
   level2_agent: 'L2 Agent (LLM) ⚡',
+  level2_agent_fallback: 'L2 Agent (fallback)',
   level2_unresolved: 'L2 Unresolved',
   level2_pending: 'L2 Pending',
 };
@@ -78,6 +79,16 @@ async function runReconciliation(demoMode = false) {
     // Auto-load evaluation
     loadEvaluation(run_id);
 
+    const banner = document.getElementById('demoHelperBanner');
+    if (banner) {
+      const liveCalls = results.llm_call_count || 0;
+      const fallbackCalls = results.agent_fallback_count || 0;
+      let agentMsg = '0 LLM calls (rules resolved 100%)';
+      if (liveCalls > 0) agentMsg = `${liveCalls} live LLM call(s) executed`;
+      else if (fallbackCalls > 0) agentMsg = `${fallbackCalls} fallback call(s) (no API key)`;
+      banner.innerHTML = `<span class="helper-icon">✓</span> <span><strong>Run ${run_id} complete:</strong> ${results.l1_matched}/${results.l1_total} orders &amp; ${results.l2_matched}/${results.l2_total} batches matched. ${agentMsg}.</span>`;
+    }
+
     const llmMsg = results.llm_call_count > 0
       ? ` · ⚡ ${results.llm_call_count} LLM call(s) made`
       : '';
@@ -108,9 +119,17 @@ function renderSummary(r) {
   document.getElementById('excPrecision').textContent = `${(r.exception_precision * 100).toFixed(1)}%`;
   document.getElementById('excRecall').textContent = `recall ${(r.exception_recall * 100).toFixed(0)}%`;
   document.getElementById('llmCalls').textContent = r.llm_call_count;
-  document.getElementById('llmCallsSub').textContent = r.llm_call_count === 0
-    ? 'gray-zone only (none needed)'
-    : `⚡ agent fired on ${r.llm_call_count} record(s)`;
+  
+  const fallbackCount = r.agent_fallback_count || 0;
+  if (r.llm_call_count > 0 && fallbackCount === 0) {
+    document.getElementById('llmCallsSub').textContent = `⚡ ${r.llm_call_count} live agent call(s)`;
+  } else if (r.llm_call_count > 0 && fallbackCount > 0) {
+    document.getElementById('llmCallsSub').textContent = `⚡ ${r.llm_call_count} live + ${fallbackCount} fallback`;
+  } else if (r.llm_call_count === 0 && fallbackCount > 0) {
+    document.getElementById('llmCallsSub').textContent = `0 live (+${fallbackCount} fallback, no API key)`;
+  } else {
+    document.getElementById('llmCallsSub').textContent = 'gray-zone only (none needed)';
+  }
 }
 
 // ─── Stage chart ───────────────────────────────────────────────────────────────
