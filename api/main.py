@@ -28,7 +28,10 @@ from pipeline.reporter import report_to_dict
 from pipeline.runner import DEMO_AGENT_SID, RunResult, run_reconciliation
 from pipeline.utils import parse_utr
 
+from dotenv import load_dotenv
+
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
+load_dotenv(PROJECT_ROOT / ".env", override=True)
 DASHBOARD_DIR = PROJECT_ROOT / "dashboard"
 
 app = FastAPI(
